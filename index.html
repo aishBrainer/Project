@@ -1,0 +1,949 @@
+/**
+ * AI-Driven Sales & Outreach System
+ * React Frontend Dashboard
+ * Save as: public/index.html
+ */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales & Outreach Dashboard</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #7c3aed;
+      --accent: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #0f172a;
+      --bg-secondary: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #cbd5e1;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #1a1f3a 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .metric-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .table-container {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: rgba(51, 65, 85, 0.5);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:hover {
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(37, 99, 235, 0.1);
+      border-color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    .badge.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .badge.danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .pipeline-stage {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      min-height: 400px;
+    }
+
+    .pipeline-stage h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-size: 1.125rem;
+    }
+
+    .deal-card {
+      background: rgba(51, 65, 85, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .deal-card:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .deal-card-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .deal-card-info {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .chart-placeholder {
+      background: rgba(51, 65, 85, 0.5);
+      border: 1px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar {
+        gap: 0.5rem;
+      }
+
+      .nav-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    function SalesDashboard() {
+      const [currentPage, setCurrentPage] = useState('overview');
+      const [kpiData, setKpiData] = useState(null);
+      const [deals, setDeals] = useState([]);
+      const [companies, setCompanies] = useState([]);
+      const [contacts, setContacts] = useState([]);
+      const [campaigns, setCampaigns] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const API_BASE = 'http://localhost:3000/api';
+
+      // Fetch KPI Data
+      useEffect(() => {
+        fetchKPI();
+        const interval = setInterval(fetchKPI, 30000); // Refresh every 30 seconds
+        return () => clearInterval(interval);
+      }, []);
+
+      const fetchKPI = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/kpi/dashboard`);
+          const data = await response.json();
+          setKpiData(data);
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      const fetchDeals = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${API_BASE}/deals`);
+          const data = await response.json();
+          setDeals(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const fetchCompanies = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${API_BASE}/companies`);
+          const data = await response.json();
+          setCompanies(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const fetchContacts = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${API_BASE}/contacts`);
+          const data = await response.json();
+          setContacts(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const fetchCampaigns = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${API_BASE}/campaigns`);
+          const data = await response.json();
+          setCampaigns(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleNavClick = (page) => {
+        setCurrentPage(page);
+        setError(null);
+        
+        if (page === 'deals') fetchDeals();
+        if (page === 'companies') fetchCompanies();
+        if (page === 'contacts') fetchContacts();
+        if (page === 'campaigns') fetchCampaigns();
+      };
+
+      const handleAddCompany = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+          const response = await fetch(`${API_BASE}/companies`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(formData))
+          });
+          if (response.ok) {
+            setShowModal(false);
+            e.target.reset();
+            fetchCompanies();
+          }
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      const handleAddDeal = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+          const response = await fetch(`${API_BASE}/deals`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(formData))
+          });
+          if (response.ok) {
+            setShowModal(false);
+            e.target.reset();
+            fetchDeals();
+          }
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      const handleAddCampaign = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+          const response = await fetch(`${API_BASE}/campaigns`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(formData))
+          });
+          if (response.ok) {
+            setShowModal(false);
+            e.target.reset();
+            fetchCampaigns();
+          }
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      return (
+        <div className="app">
+          <header>
+            <h1>💼 Sales & Outreach System</h1>
+            <div className="navbar">
+              <button className={`nav-btn ${currentPage === 'overview' ? 'active' : ''}`} onClick={() => handleNavClick('overview')}>📊 Overview</button>
+              <button className={`nav-btn ${currentPage === 'deals' ? 'active' : ''}`} onClick={() => handleNavClick('deals')}>🎯 Deals</button>
+              <button className={`nav-btn ${currentPage === 'companies' ? 'active' : ''}`} onClick={() => handleNavClick('companies')}>🏢 Companies</button>
+              <button className={`nav-btn ${currentPage === 'contacts' ? 'active' : ''}`} onClick={() => handleNavClick('contacts')}>👥 Contacts</button>
+              <button className={`nav-btn ${currentPage === 'campaigns' ? 'active' : ''}`} onClick={() => handleNavClick('campaigns')}>📧 Campaigns</button>
+            </div>
+          </header>
+
+          <main>
+            {error && <div className="error">❌ Error: {error}</div>}
+
+            {/* OVERVIEW PAGE */}
+            {currentPage === 'overview' && kpiData && (
+              <>
+                <h2 className="section-title">📈 Dashboard Overview</h2>
+                <div className="grid">
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Active Deals</span>
+                      <span className="metric-value">{kpiData.summary?.active_deals || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Active Pipeline</span>
+                      <span className="metric-value">${(kpiData.summary?.active_pipeline || 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Closed Deals</span>
+                      <span className="metric-value">{kpiData.summary?.closed_deals || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Closed Revenue</span>
+                      <span className="metric-value">${(kpiData.summary?.closed_revenue || 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Total Contacts</span>
+                      <span className="metric-value">{kpiData.summary?.total_contacts || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Total Companies</span>
+                      <span className="metric-value">{kpiData.summary?.total_companies || 0}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="section-title">📅 Today's Activity</h2>
+                <div className="grid">
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Emails Sent</span>
+                      <span className="metric-value">{kpiData.today?.emails_sent || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Opens</span>
+                      <span className="metric-value">{kpiData.today?.emails_opened || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Clicks</span>
+                      <span className="metric-value">{kpiData.today?.emails_clicked || 0}</span>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="metric">
+                      <span className="metric-label">Replies</span>
+                      <span className="metric-value">{kpiData.today?.emails_replied || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* DEALS PAGE */}
+            {currentPage === 'deals' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <h2 className="section-title">🎯 Pipeline & Deals</h2>
+                  <button className="btn" onClick={() => setShowModal(true)}>+ Add Deal</button>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading deals...</div>
+                ) : (
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Company</th>
+                          <th>Contact</th>
+                          <th>Stage</th>
+                          <th>Deal Size</th>
+                          <th>Probability</th>
+                          <th>Expected Close</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {deals.map(deal => (
+                          <tr key={deal.id}>
+                            <td><strong>{deal.company_name}</strong></td>
+                            <td>{deal.first_name} {deal.last_name}</td>
+                            <td><span className="badge">{deal.stage}</span></td>
+                            <td>${deal.deal_size?.toLocaleString() || '0'}</td>
+                            <td>{deal.probability}%</td>
+                            <td>{deal.expected_close_date}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* COMPANIES PAGE */}
+            {currentPage === 'companies' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <h2 className="section-title">🏢 Companies & Prospects</h2>
+                  <button className="btn" onClick={() => setShowModal(true)}>+ Add Company</button>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading companies...</div>
+                ) : (
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Company Name</th>
+                          <th>Industry</th>
+                          <th>Vertical</th>
+                          <th>Website</th>
+                          <th>Size</th>
+                          <th>Strategic Fit</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {companies.map(company => (
+                          <tr key={company.id}>
+                            <td><strong>{company.name}</strong></td>
+                            <td>{company.industry || '-'}</td>
+                            <td><span className="badge">{company.vertical || 'N/A'}</span></td>
+                            <td>{company.website || '-'}</td>
+                            <td>{company.size || '-'}</td>
+                            <td>{company.strategic_fit_score?.toFixed(1) || '0'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* CONTACTS PAGE */}
+            {currentPage === 'contacts' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <h2 className="section-title">👥 Contacts & Decision Makers</h2>
+                  <button className="btn" onClick={() => setShowModal(true)}>+ Add Contact</button>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading contacts...</div>
+                ) : (
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Title</th>
+                          <th>Company</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {contacts.map(contact => (
+                          <tr key={contact.id}>
+                            <td><strong>{contact.first_name} {contact.last_name}</strong></td>
+                            <td>{contact.email}</td>
+                            <td>{contact.phone || '-'}</td>
+                            <td>{contact.title || '-'}</td>
+                            <td>{contact.company_name}</td>
+                            <td><span className={`badge ${contact.status === 'prospect' ? 'warning' : 'success'}`}>{contact.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* CAMPAIGNS PAGE */}
+            {currentPage === 'campaigns' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <h2 className="section-title">📧 Outreach Campaigns</h2>
+                  <button className="btn" onClick={() => setShowModal(true)}>+ Create Campaign</button>
+                </div>
+
+                {loading ? (
+                  <div className="loading">Loading campaigns...</div>
+                ) : (
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Campaign Name</th>
+                          <th>Type</th>
+                          <th>Vertical</th>
+                          <th>Sent</th>
+                          <th>Open Rate</th>
+                          <th>Click Rate</th>
+                          <th>Reply Rate</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {campaigns.map(campaign => (
+                          <tr key={campaign.id}>
+                            <td><strong>{campaign.name}</strong></td>
+                            <td>{campaign.type}</td>
+                            <td><span className="badge">{campaign.vertical}</span></td>
+                            <td>{campaign.total_sent}</td>
+                            <td>{((campaign.total_opened / campaign.total_sent) * 100).toFixed(1)}%</td>
+                            <td>{((campaign.total_clicked / campaign.total_sent) * 100).toFixed(1)}%</td>
+                            <td>{((campaign.total_replied / campaign.total_sent) * 100).toFixed(1)}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+
+          {/* MODALS */}
+          <div className={`modal ${showModal ? 'active' : ''}`}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>
+                  {currentPage === 'companies' && '➕ Add Company'}
+                  {currentPage === 'deals' && '➕ Add Deal'}
+                  {currentPage === 'contacts' && '➕ Add Contact'}
+                  {currentPage === 'campaigns' && '➕ Create Campaign'}
+                </h2>
+                <button className="close-btn" onClick={() => setShowModal(false)}>×</button>
+              </div>
+
+              {currentPage === 'companies' && (
+                <form onSubmit={handleAddCompany}>
+                  <div className="form-group">
+                    <label>Company Name *</label>
+                    <input name="name" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Industry</label>
+                    <input name="industry" />
+                  </div>
+                  <div className="form-group">
+                    <label>Vertical</label>
+                    <select name="vertical">
+                      <option>Select Vertical</option>
+                      <option>Wellness</option>
+                      <option>Hospitality</option>
+                      <option>Healthcare</option>
+                      <option>Sports</option>
+                      <option>Corporate</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Website</label>
+                    <input name="website" type="url" />
+                  </div>
+                  <div className="form-group">
+                    <label>Company Size</label>
+                    <select name="size">
+                      <option>Select Size</option>
+                      <option>1-50</option>
+                      <option>51-200</option>
+                      <option>201-1000</option>
+                      <option>1000+</option>
+                    </select>
+                  </div>
+                  <button type="submit" className="btn">Create Company</button>
+                </form>
+              )}
+
+              {currentPage === 'deals' && (
+                <form onSubmit={handleAddDeal}>
+                  <div className="form-group">
+                    <label>Deal Title *</label>
+                    <input name="title" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Company ID</label>
+                    <input name="company_id" type="number" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Deal Size ($)</label>
+                    <input name="deal_size" type="number" />
+                  </div>
+                  <div className="form-group">
+                    <label>Pipeline</label>
+                    <select name="pipeline">
+                      <option>Direct Enterprise Sales</option>
+                      <option>Partner / Channel Pipeline</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Stage</label>
+                    <select name="stage">
+                      <option>lead</option>
+                      <option>contact</option>
+                      <option>demo</option>
+                      <option>proposal</option>
+                      <option>negotiation</option>
+                      <option>closed</option>
+                    </select>
+                  </div>
+                  <button type="submit" className="btn">Create Deal</button>
+                </form>
+              )}
+
+              {currentPage === 'campaigns' && (
+                <form onSubmit={handleAddCampaign}>
+                  <div className="form-group">
+                    <label>Campaign Name *</label>
+                    <input name="name" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Type</label>
+                    <select name="type">
+                      <option>email</option>
+                      <option>linkedin</option>
+                      <option>mixed</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Vertical</label>
+                    <select name="vertical">
+                      <option>Wellness</option>
+                      <option>Hospitality</option>
+                      <option>Healthcare</option>
+                      <option>Sports</option>
+                      <option>Corporate</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Email Sequence</label>
+                    <textarea name="email_sequence" rows="4" placeholder="Paste email sequence..."></textarea>
+                  </div>
+                  <button type="submit" className="btn">Create Campaign</button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<SalesDashboard />);
+  </script>
+</body>
+</html>
