@@ -14,6 +14,7 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isVercel = !!process.env.VERCEL;
 
 // Middleware
 app.use(cors());
@@ -22,8 +23,8 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(__dirname));
 
 // Database Setup
-const DB_PATH = path.join(__dirname, 'data', 'sales.db');
-const dataDir = path.join(__dirname, 'data');
+const dataDir = isVercel ? path.join('/tmp', 'sales-outreach-system') : path.join(__dirname, 'data');
+const DB_PATH = path.join(dataDir, 'sales.db');
 
 // Create data directory if not exists
 if (!fs.existsSync(dataDir)) {
@@ -591,8 +592,12 @@ app.use((req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Sales System Server running on http://localhost:${PORT}`);
-  console.log(`📊 Dashboard: http://localhost:${PORT}`);
-  console.log(`🔌 API: http://localhost:${PORT}/api`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Sales System Server running on http://localhost:${PORT}`);
+    console.log(`Dashboard: http://localhost:${PORT}`);
+    console.log(`API: http://localhost:${PORT}/api`);
+  });
+}
+
+module.exports = app;
